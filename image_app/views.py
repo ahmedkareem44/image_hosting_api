@@ -25,7 +25,7 @@ class ImageList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        This view should return a list of all the purchases
+        This view should return a list of all the images
         for the currently authenticated user.
         """
         user = self.request.user
@@ -33,13 +33,6 @@ class ImageList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    # def validate_image(self, value):
-    #     img = PIL_Image.open(filename)
-    #     print(img.format)
-    #     if value < 18:
-    #         raise serializers.ValidationError('The person has to be at least 18 years old.')
-    #     return value
 
 
 class ImageDetail(generics.RetrieveAPIView):

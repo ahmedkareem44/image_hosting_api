@@ -2,8 +2,6 @@ from rest_framework import serializers
 from image_app.models import Image, Thumbnail
 from PIL import Image as PIL_Image
 
-# from django.core.validators import FileExtensionValidator
-
 
 class ImageSerializer(serializers.ModelSerializer):
     image_view = serializers.HyperlinkedIdentityField(view_name='image_view')

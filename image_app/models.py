@@ -9,9 +9,12 @@ from image_app.util import image_resize
 class ThumbnailType(models.Model):
     size = models.IntegerField(unique=True)
 
+    def __str__(self):
+        return f"{self.size}"
+
 
 class Image(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=500)
     image = models.ImageField(upload_to="static/")
     upload_data = models.DateTimeField('upload date', default=datetime.datetime.now)
@@ -25,7 +28,7 @@ class Image(models.Model):
 
 
 class Thumbnail(models.Model):
-    original = models.ForeignKey(Image, on_delete=models.PROTECT,related_name='thumbnails')
+    original = models.ForeignKey(Image, on_delete=models.CASCADE, related_name='thumbnails')
     image = models.ImageField(upload_to="static/")
     size = models.IntegerField()
 
@@ -38,17 +41,17 @@ class Thumbnail(models.Model):
 
 
 class AccountTier(models.Model):
-    plan_title = models.CharField(max_length=500)
+    plan_title = models.CharField(max_length=500, unique=True)
     thumbnail_type = models.ManyToManyField(ThumbnailType)
-    originally_uploaded_file = models.BooleanField()
-    expiring_link = models.BooleanField()
+    originally_uploaded_file = models.BooleanField(default=False)
+    expiring_link = models.BooleanField(default=False)
 
     def __str__(self):
         return self.plan_title
 
 
 class Subscription(models.Model):
-    user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="user_subscription")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_subscription")
     account_tier = models.ForeignKey(AccountTier, on_delete=models.PROTECT)
 
 
