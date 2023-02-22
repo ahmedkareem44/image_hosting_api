@@ -3,11 +3,9 @@ from django.shortcuts import render
 # Create your views here.
 
 from rest_framework import generics
-# from rest_framework import permissions
-from image_app.serializers import ImageSerializer, ImageDetailsSerializer, ThumbnailSerializer
-from image_app.models import Image, Thumbnail
+from image_app.serializers import ImageSerializer, ImageDetailsSerializer
+from image_app.models import Image
 from rest_framework import permissions
-# from PIL import Image as PIL_Image
 
 
 class IsOwner(permissions.BasePermission):
@@ -19,9 +17,30 @@ class IsOwner(permissions.BasePermission):
         return obj.user == request.user
 
 
+class HasSubscription(permissions.BasePermission):
+    """
+    Custom permission to only allow subscribed user.
+    """
+    message = 'User has no active subscription.'
+
+    def has_permission(self, request, view):
+        return bool(hasattr(request.user, "user_subscription"))
+
+
 class ImageList(generics.ListCreateAPIView):
+    """Returns a list of all images uploaded by the current user.
+       user need to be:
+       * Logged in
+       * is staff
+       * has subscription
+
+       for post:
+       accepted image format png, jpeg, jpg
+       title must be unique
+
+        """
     serializer_class = ImageSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    permission_classes = [permissions.IsAuthenticated, IsOwner, HasSubscription]
 
     def get_queryset(self):
         """
@@ -36,16 +55,12 @@ class ImageList(generics.ListCreateAPIView):
 
 
 class ImageDetail(generics.RetrieveAPIView):
+    """
+        Returns an Image object
+    """
     serializer_class = ImageDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    permission_classes = [permissions.IsAuthenticated, IsOwner, HasSubscription]
 
     def get_queryset(self):
         user = self.request.user
         return Image.objects.filter(user=user)
-
-
-class ThumbnailDetail(generics.RetrieveAPIView):
-    serializer_class = ThumbnailSerializer
-    queryset = Thumbnail.objects.all()
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
-

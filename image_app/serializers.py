@@ -33,7 +33,7 @@ class ImageDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ['id', 'user', 'title', 'upload_data', 'thumbnails', 'original_image']
+        fields = ['id', 'user', 'title', 'upload_data', 'thumbnails', 'original_image', 'expiring_link']
 
     def get_original_image(self, image):
         request = self.context.get('request')

@@ -15,3 +15,11 @@ add superuser
 ```
     $ docker-compose exec web python manage.py createsuperuser 
 ```
+
+#### User Requirements
+ - User must be staff ( to login using Django admin)
+ - User must have subscription (add subscription using /admin/image_app/subscription/)
+ 
+ #### API starting point
+    /images/  [image_list]
+    /images/<pk>/  [image_details]

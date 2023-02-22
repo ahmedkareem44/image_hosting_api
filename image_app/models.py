@@ -15,7 +15,7 @@ class ThumbnailType(models.Model):
 
 class Image(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=500, unique=True)
     image = models.ImageField(upload_to="static/")
     upload_data = models.DateTimeField('upload date', default=datetime.datetime.now)
 
@@ -23,6 +23,13 @@ class Image(models.Model):
     def original_image(self):
         if self.user.user_subscription.account_tier.originally_uploaded_file:
             return self.image
+        else:
+            return "N/A"
+
+    @property
+    def expiring_link(self):
+        if self.user.user_subscription.account_tier.expiring_link:
+            return "/expiring_link"
         else:
             return "N/A"
 
