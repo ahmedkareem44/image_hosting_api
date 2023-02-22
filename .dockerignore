@@ -1,0 +1,14 @@
+.project
+.idea
+.pydevproject
+.idea/workspace.xml
+.DS_Store
+.git/
+.sass-cache
+.vagrant/
+.sqlite3
+
+venv/
+*.jpeg
+*.png
+*.jpg

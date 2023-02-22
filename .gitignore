@@ -109,8 +109,7 @@ target/
 db.sqlite3
 
 venv/
-venv2/
-venv3/
+
 *.jpeg
 *.png
 *.jpg
