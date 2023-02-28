@@ -1,10 +1,6 @@
-from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
 from image_app import views
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'images', views.ImageViewSet, basename='image_view')
+urlpatterns = router.urls
 
-urlpatterns = [
-    path("images/", views.ImageList.as_view()),
-    path("images/<int:pk>/", views.ImageDetail.as_view(), name="image_view"),
-]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

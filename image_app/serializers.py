@@ -4,13 +4,13 @@ from PIL import Image as PIL_Image
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    image_view = serializers.HyperlinkedIdentityField(view_name='image_view')
+    image_url = serializers.HyperlinkedIdentityField(view_name='image_view-detail', lookup_field="uuid_field")
     image = serializers.ImageField(write_only=True)
-    upload_data = serializers.DateTimeField(read_only=True)
+    upload_date = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Image
-        fields = ['id', 'image_view', 'title', 'upload_data', 'image']
+        fields = ['uuid_field', 'image_url', 'title', 'upload_date', 'image']
 
     def validate_image(self, obj):
         img = PIL_Image.open(obj)
@@ -18,6 +18,10 @@ class ImageSerializer(serializers.ModelSerializer):
         if img_format.lower() not in ["jpg", "png", 'jpeg']:
             raise serializers.ValidationError(f"{img_format} files are not supported.")
         return obj
+
+    def check_title_is_unique(self, user):
+        if Image.objects.filter(title=self.initial_data["title"], user=user):
+            raise serializers.ValidationError("title must be unique")
 
 
 class ThumbnailSerializer(serializers.ModelSerializer):
@@ -33,7 +37,7 @@ class ImageDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ['id', 'user', 'title', 'upload_data', 'thumbnails', 'original_image', 'expiring_link']
+        fields = ['uuid_field', 'user', 'title', 'upload_date', 'thumbnails', 'original_image', 'expiring_link']
 
     def get_original_image(self, image):
         request = self.context.get('request')

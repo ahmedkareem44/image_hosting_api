@@ -2,10 +2,9 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from rest_framework import generics
+from rest_framework import mixins, viewsets, permissions
 from image_app.serializers import ImageSerializer, ImageDetailsSerializer
 from image_app.models import Image
-from rest_framework import permissions
 
 
 class IsOwner(permissions.BasePermission):
@@ -27,40 +26,32 @@ class HasSubscription(permissions.BasePermission):
         return bool(hasattr(request.user, "user_subscription"))
 
 
-class ImageList(generics.ListCreateAPIView):
+class ImageViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """Returns a list of all images uploaded by the current user.
-       user need to be:
-       * Logged in
-       * is staff
-       * has subscription
+           user need to be:
+           * Logged in
+           * is staff
+           * has subscription
 
-       for post:
-       accepted image format png, jpeg, jpg
-       title must be unique
+           for post:
+           accepted image format png, jpeg, jpg
+           title must be unique
 
-        """
-    serializer_class = ImageSerializer
+            """
+
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasSubscription]
+    lookup_field = "uuid_field"
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ImageDetailsSerializer
+        return ImageSerializer
 
     def get_queryset(self):
-        """
-        This view should return a list of all the images
-        for the currently authenticated user.
-        """
         user = self.request.user
         return Image.objects.filter(user=user)
 
     def perform_create(self, serializer):
+        serializer.check_title_is_unique(self.request.user)
         serializer.save(user=self.request.user)
 
-
-class ImageDetail(generics.RetrieveAPIView):
-    """
-        Returns an Image object
-    """
-    serializer_class = ImageDetailsSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner, HasSubscription]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Image.objects.filter(user=user)

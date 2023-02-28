@@ -13,7 +13,7 @@ class ThumbnailAdmin(admin.ModelAdmin):
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'title', 'upload_data', 'image')
+    list_display = ('id', 'user', 'title', 'upload_date', 'image')
     list_filter = ["user", ]
 
 
@@ -24,7 +24,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 @admin.register(AccountTier)
 class AccountTierAdmin(admin.ModelAdmin):
-    list_display = ('id', 'plan_title', 'originally_uploaded_file', 'expiring_link')
+    list_display = ('id', 'plan_title', 'can_access_original_file', 'can_generate_expiring_links')
     filter_horizontal = ('thumbnail_type',)
 
 
